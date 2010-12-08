@@ -99,6 +99,9 @@ UWData.Collection = Backbone.Collection.extend({
       all: function() {
         return new this;
       },
+      load: function(fcn) {
+        return this.all().load(fcn);
+      },
       search: function(q) {
         return this.where({q:q});
       }
@@ -249,11 +252,15 @@ UWData.Classes = UWData.Collection.define({
 UWData.Professor = UWData.Model.define({
   name:   'professor',
   path:   function() {
-    if (this.params['id']) {
-      return 'prof/' + this.params['id'];
+    if (this.params['professor_id']) {
+      return 'prof/' + this.params['professor_id'];
     } else {
-      throw new Error('Must specify an id for professor lookup');
+      throw new Error('Must specify a professor id for professor lookup');
     }
+  }
+},{
+  find:   function(professor_id) {
+    return this.where({professor_id:professor_id});
   }
 });
 
