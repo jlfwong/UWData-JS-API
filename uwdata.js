@@ -57,7 +57,7 @@ UWData.sync = function(method, model, success, error) {
     error:        error
   };
 
-  console.log("Request: " + params.url + "?key=" + UWData.key);
+  //console.log("Request: " + params.url + "?key=" + UWData.key);
 
   // Make the request.
   $.ajax(params);
@@ -96,6 +96,9 @@ UWData.Collection = Backbone.Collection.extend({
         params = params || {};
         return new this([],params);
       },
+      all: function() {
+        return new this;
+      },
       search: function(q) {
         return this.where({q:q});
       }
@@ -109,7 +112,11 @@ UWData.Model = Backbone.Model.extend({
   sync:       UWData.sync,
   params:     {},
   initialize: function(attributes) {
-    this.attributes = attributes[this.name];
+    this.attributes = attributes[this.name] || attributes;
+  },
+  parse:      function(attributes) {
+    attributes = attributes[this.name] || attributes;
+    return attributes;
   },
   load:       function(fcn) {
     this.bind('change',function() {
@@ -136,7 +143,22 @@ UWData.Model = Backbone.Model.extend({
 
 // Faculties
 UWData.Faculty = UWData.Model.define({
-  name:   'faculty'
+  name:   'faculty',
+  path:   function() {
+    if (this.params['faculty_acronym']) {
+      return 'faculty/' + this.params['faculty_acronym'];
+    } else {
+      throw new Error('Must specify an acronym for faculty lookup');
+    }
+  },
+  courses: function() {
+    var acronym = this.params['faculty_acronym'] || this.get('acronym');
+    return UWData.Courses.where({faculty_acronym: acronym});
+  }
+},{
+  find:   function(acronym) {
+    return this.where({faculty_acronym: acronym});
+  }
 });
 
 UWData.Faculties = UWData.Collection.define({
@@ -148,23 +170,40 @@ UWData.Faculties = UWData.Collection.define({
 // Courses
 UWData.Course = UWData.Model.define({
   name:   'course',
+  path:   function() {
+    if (this.params['faculty_acronym'] && this.params['course_number']) {
+      return 'course/' + 
+        this.params['faculty_acronym'] + '/' + 
+        this.params['course_number'];
+    } else if (this.params['course_id']) {
+      return 'course/' + this.params['course_id'];
+    } else {
+      throw new Error('Must specify acronym and number or course id for course lookup');
+    }
+  },
   schedules: function(params) {
-    var faculty = this.get('faculty_acronym') || this.params['faculty'] || this.collection.params['faculty'];
+    var faculty = this.get('faculty_acronym') || 
+      this.params['faculty_acronym'] || 
+      this.collection.params['faculty_acronym'];
 
     return UWData.CourseSchedules.where(_.extend({
-      faculty:        faculty,
-      course_number:  this.get('course_number')
+      faculty_acronym:  faculty,
+      course_number:    this.get('course_number')
     },params || {}));
+  }
+},{
+  find: function(cid) {
+    return this.where({course_id: cid});
   }
 });
 
 UWData.Courses = UWData.Collection.define({
   name:   'courses',
   path:   function() {
-    if (this.params['faculty']) {
-      return 'faculty/' + this.params['faculty'] + '/courses';
+    if (this.params['faculty_acronym']) {
+      return 'faculty/' + this.params['faculty_acronym'] + '/courses';
     } else {
-      throw new Error('Must specify a faculty for course lookup');
+      throw new Error('Must specify a faculty acronym for course lookup');
     }
   },
   model:  UWData.Course
