@@ -181,14 +181,18 @@ UWData.Course = UWData.Model.define({
       throw new Error('Must specify acronym and number or course id for course lookup');
     }
   },
-  schedules: function(params) {
-    var faculty = this.get('faculty_acronym') || 
+  classes: function(params) {
+    var faculty_acronym = this.get('faculty_acronym') || 
       this.params['faculty_acronym'] || 
-      this.collection.params['faculty_acronym'];
+      (this.collection && this.collection.params['faculty_acronym']);
 
-    return UWData.CourseSchedules.where(_.extend({
-      faculty_acronym:  faculty,
-      course_number:    this.get('course_number')
+    var course_number = this.get('course_number') || this.params['course_number'];
+    var course_id = this.get('cid') || this.params['course_id'];
+
+    return UWData.Classes.where(_.extend({
+      faculty_acronym:  faculty_acronym,
+      course_number:    course_number,
+      course_id:        course_id
     },params || {}));
   }
 },{
@@ -211,8 +215,8 @@ UWData.Courses = UWData.Collection.define({
   model:  UWData.Course
 });
 
-// Course Schedules
-UWData.CourseSchedule = UWData.Model.define({
+// Classes
+UWData.Class = UWData.Model.define({
   name:   'class',
   professor: function(params) {
     var prof_id = this.get('instructor_id');
@@ -227,16 +231,18 @@ UWData.CourseSchedule = UWData.Model.define({
   }
 });
 
-UWData.CourseSchedules = UWData.Collection.define({
+UWData.Classes = UWData.Collection.define({
   name:   'classes',
   path:   function() {
-    if (this.params['faculty'] && this.params['course_number']) {
-      return 'course/' + this.params['faculty'] + '/' + this.params['course_number'] + '/schedule';
+    if (this.params['faculty_acronym'] && this.params['course_number']) {
+      return 'course/' + this.params['faculty_acronym'] + '/' + this.params['course_number'] + '/schedule';
+    } else if (this.params['course_id']) {
+      return 'course/' + this.params['course_id'] + '/schedule';
     } else {
-      throw new Error('Must specify a faculty and course number for schedule lookup');
+      throw new Error('Must specify a coures id or faculty acronym and course number for schedule lookup');
     }
   },
-  model: UWData.CourseSchedule
+  model: UWData.Class
 });
 
 // Professors

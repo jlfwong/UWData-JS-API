@@ -97,6 +97,73 @@ asyncTest('course load course id', function() {
   });
 });
 
+asyncTest('classes of unloaded course by number', function() {
+  stop(timeout);
+  UWData.Course.find(4877).classes().load(function(classes) {
+    equal(classes.name,'classes');
+    ok(classes.length > 1);
+    ok(classes.models[0].get('class_number'));
+    ok(classes.models[0].get('term'));
+    start();
+  });
+});
+
+asyncTest('classes of unloaded course by faculty', function() {
+  stop(timeout);
+  UWData.Course.where({
+    faculty_acronym: 'ECON',
+    course_number: '102'
+  }).classes().load(function(classes) {
+    equal(classes.name,'classes');
+    ok(classes.length > 1);
+    ok(classes.models[0].get('class_number'));
+    ok(classes.models[0].get('term'));
+    start();
+  });
+});
+
+asyncTest('classes of loaded course by number', function() {
+  stop(timeout);
+  UWData.Course.find(4877).load(function(course) {
+    course.classes().load(function(classes) {
+      equal(classes.name,'classes');
+      ok(classes.length > 1);
+      ok(classes.models[0].get('class_number'));
+      ok(classes.models[0].get('term'));
+      start();
+    });
+  });
+});
+
+asyncTest('classes of loaded course by faculty', function() {
+  stop(timeout);
+  UWData.Course.where({
+    faculty_acronym: 'ECON',
+    course_number: '102'
+  }).load(function(course) {
+    course.classes().load(function(classes) {
+      equal(classes.name,'classes');
+      ok(classes.length > 1);
+      ok(classes.models[0].get('class_number'));
+      ok(classes.models[0].get('term'));
+      start();
+    });
+  });
+});
+
+asyncTest('classes of loaded course by search', function() {
+  stop(timeout);
+  UWData.Courses.search('ECON 102').load(function(courses) {
+    courses.models[0].classes().load(function(classes) {
+      equal(classes.name,'classes');
+      ok(classes.length > 1);
+      ok(classes.models[0].get('class_number'));
+      ok(classes.models[0].get('term'));
+      start();
+    });
+  });
+});
+
 module('UWData.Courses');
 
 asyncTest('search',function() {
@@ -106,6 +173,35 @@ asyncTest('search',function() {
     equal(first.get('faculty_acronym'),'ECE');
     equal(first.get('course_number'),'126');
     ok(first.get('description'));
+    start();
+  });
+});
+
+module('UWData.Classes');
+
+asyncTest('load by faculty & course number',function() {
+  stop(timeout);
+  UWData.Classes.where({
+    faculty_acronym: 'ECON',
+    course_number: '102'
+  }).load(function(classes) {
+    equal(classes.name,'classes');
+    equal(classes.models[0].get('faculty_acronym'),'ECON');
+    equal(classes.models[0].get('course_number'),'102');
+    ok(classes.length > 1);
+    start();
+  });
+});
+
+asyncTest('load by course_id',function() {
+  stop(timeout);
+  UWData.Classes.where({
+    course_id: 4877
+  }).load(function(classes) {
+    equal(classes.name,'classes');
+    equal(classes.models[0].get('faculty_acronym'),'ECON');
+    equal(classes.models[0].get('course_number'),'102');
+    ok(classes.length > 1);
     start();
   });
 });
