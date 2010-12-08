@@ -257,6 +257,12 @@ UWData.Professor = UWData.Model.define({
     } else {
       throw new Error('Must specify a professor id for professor lookup');
     }
+  },
+  timeslots: function(params) {
+    var professor_id = this.get('id') || this.params['professor_id'];
+    return UWData.ProfessorTimeslots.where(_.extend({
+      professor_id: professor_id
+    },params));
   }
 },{
   find:   function(professor_id) {

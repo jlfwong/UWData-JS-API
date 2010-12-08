@@ -253,6 +253,34 @@ asyncTest('load by id',function() {
   });
 });
 
+asyncTest('timeslots without load',function() {
+  stop(timeout);
+  UWData.Professor.find(1409).timeslots({
+    term: 1105
+  }).load(function(timeslots) {
+    equal(timeslots.name,'timeslots');
+    equal(timeslots.at(0).name,'timeslot');
+    ok(timeslots.length > 0);
+    equal(timeslots.at(0).get('instructor'),'Smith,Larry');
+    start();
+  });
+});
+
+asyncTest('timeslots after load',function() {
+  stop(timeout);
+  UWData.Professor.find(1409).load(function(prof) {
+    prof.timeslots({
+      term: 1105
+    }).load(function(timeslots) {
+      equal(timeslots.name,'timeslots');
+      equal(timeslots.at(0).name,'timeslot');
+      ok(timeslots.length > 0);
+      equal(timeslots.at(0).get('instructor'),'Smith,Larry');
+      start();
+    });
+  });
+});
+
 module('UWData.Professors');
 
 asyncTest('search',function() {
@@ -265,6 +293,21 @@ asyncTest('search',function() {
   });
 });
 
+asyncTest('timeslots after search',function() {
+  stop(timeout);
+  UWData.Professors.search('Larry Smith').load(function(profs) {
+    profs.at(0).timeslots({
+      term: 1105
+    }).load(function(timeslots) {
+      equal(timeslots.name,'timeslots');
+      equal(timeslots.at(0).name,'timeslot');
+      ok(timeslots.length > 0);
+      equal(timeslots.at(0).get('instructor'),'Smith,Larry');
+      start();
+    });
+  });
+});
+
 module('UWData.ProfessorTimeslots');
 
 asyncTest('load by id',function() {
@@ -274,6 +317,7 @@ asyncTest('load by id',function() {
     term: 1105
   }).load(function(timeslots) {
     equal(timeslots.name,'timeslots');
+    equal(timeslots.at(0).name,'timeslot');
     ok(timeslots.length > 0);
     equal(timeslots.at(0).get('instructor'),'Smith,Larry');
     start();
