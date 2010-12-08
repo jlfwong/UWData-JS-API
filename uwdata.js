@@ -275,3 +275,32 @@ UWData.Professors = UWData.Collection.define({
   },
   model: UWData.Professor
 });
+
+
+// Professor Timeslots
+UWData.ProfessorTimeslot = UWData.Model.define({
+  name:   'timeslot'
+});
+
+UWData.ProfessorTimeslots = UWData.Collection.define({
+  name:   'timeslots',
+  path:   function() {
+    if (this.params['professor_id']) {
+      return 'prof/' + this.params['professor_id'] + '/timeslots';
+    } else {
+      throw new Error('Must specify professor id for timeslot lookup');
+    }
+  },
+  model: UWData.ProfessorTimeslot
+});
+
+// Terms
+UWData.Term = UWData.Model.define({
+  name:   'term'
+});
+
+UWData.Terms = UWData.Collection.define({
+  name:   'terms',
+  path:   'term/list',
+  model:  UWData.Term
+});

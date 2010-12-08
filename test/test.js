@@ -217,6 +217,30 @@ asyncTest('load by course_id',function() {
   });
 });
 
+asyncTest('class instructor',function() {
+  stop(timeout);
+  UWData.Classes.where({
+    course_id: 6944
+  }).load(function(classes) {
+    equal(classes.name,'classes');
+    var firstclass = classes.at(0);
+    equal(firstclass.get('faculty_acronym'),'MUSIC');
+    equal(firstclass.get('course_number'),'100');
+    equal(firstclass.get('instructor'),'Brownell,John');
+    // FIXME: Instructor ID always zero
+    equal(firstclass.get('instructor_id'),'165','FIXME: Instructor ID is always 0?');
+    start();
+    /*
+    firstclass.professor().load(function(prof) {
+      equal(prof.name,'professor');
+      equal(prof.get('first_name'),'John');
+      equal(prof.get('last_name'),'Bronwell');
+      start();
+    });
+    */
+  });
+});
+
 module('UWData.Professor');
 
 asyncTest('load by id',function() {
@@ -237,6 +261,34 @@ asyncTest('search',function() {
     equal(profs.name,'professors');
     equal(profs.at(0).get('first_name'),'Larry');
     equal(profs.at(0).get('last_name'),'Smith');
+    start();
+  });
+});
+
+module('UWData.ProfessorTimeslots');
+
+asyncTest('load by id',function() {
+  stop(timeout);
+  UWData.ProfessorTimeslots.where({
+    professor_id: 1409,
+    term: 1105
+  }).load(function(timeslots) {
+    equal(timeslots.name,'timeslots');
+    ok(timeslots.length > 0);
+    equal(timeslots.at(0).get('instructor'),'Smith,Larry');
+    start();
+  });
+});
+
+module('UWData.Terms');
+
+asyncTest('load',function() {
+  stop(timeout);
+  UWData.Terms.load(function(terms) {
+    equal(terms.name,'terms');
+    equal(terms.at(0).name,'term');
+    ok(terms.at(0).get('term_season'));
+    ok(terms.at(0).get('term_year'));
     start();
   });
 });
