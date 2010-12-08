@@ -200,10 +200,12 @@ UWData.Course = UWData.Model.define({
 UWData.Courses = UWData.Collection.define({
   name:   'courses',
   path:   function() {
-    if (this.params['faculty_acronym']) {
+    if (this.params['q']) {
+      return 'course/search';
+    } else if (this.params['faculty_acronym']) {
       return 'faculty/' + this.params['faculty_acronym'] + '/courses';
     } else {
-      throw new Error('Must specify a faculty acronym for course lookup');
+      throw new Error('Must specify a faculty acronym or search query for course lookup');
     }
   },
   model:  UWData.Course

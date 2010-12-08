@@ -96,3 +96,16 @@ asyncTest('course load course id', function() {
     start();
   });
 });
+
+module('UWData.Courses');
+
+asyncTest('search',function() {
+  stop(timeout);
+  UWData.Courses.search('ECE 126').load(function(courses) {
+    var first = courses.models[0];
+    equal(first.get('faculty_acronym'),'ECE');
+    equal(first.get('course_number'),'126');
+    ok(first.get('description'));
+    start();
+  });
+});
