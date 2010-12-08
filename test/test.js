@@ -228,7 +228,7 @@ asyncTest('class instructor',function() {
     equal(firstclass.get('course_number'),'100');
     equal(firstclass.get('instructor'),'Brownell,John');
     // FIXME: Instructor ID always zero
-    equal(firstclass.get('instructor_id'),'165','FIXME: Instructor ID is always 0?');
+    equal(firstclass.get('instructor_id'),'165','API bug?: Instructor ID is always 0');
     start();
     /*
     firstclass.professor().load(function(prof) {
