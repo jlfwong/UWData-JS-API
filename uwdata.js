@@ -43,7 +43,8 @@ UWData.sync = function(method, model, success, error) {
   //
   // Will add {q: 'Larry Smith'} to the data parms
   var data = _.extend({
-    key: UWData.key
+    key:  UWData.key,
+    term: UWData.term || ''
   }, model.params);
 
   // Default JSONP-request options.

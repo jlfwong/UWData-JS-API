@@ -18,19 +18,19 @@ var ClassesPartialView = Backbone.View.extend({
       ["%h3",cur_class.get('component_section')],
       ["%ul",
         ["%li",
-          ["%b","Instructor:"],
-          ["%span",cur_class.get('instructor_name')]
+          ["%b","Instructor: "],
+          ["%span",cur_class.get('instructor')]
         ],
         ["%li",
-          ["%b","Days:"],
+          ["%b","Days: "],
           ["%span",cur_class.get('days')]
         ],
         ["%li",
-          ["%b","Start Time:"],
+          ["%b","Start Time: "],
           ["%span",cur_class.get('start_time')]
         ],
         ["%li",
-          ["%b","End Time:"],
+          ["%b","End Time: "],
           ["%span",cur_class.get('end_time')]
         ]
       ]
