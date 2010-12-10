@@ -18,7 +18,7 @@ var FacultiesPartialView = Backbone.View.extend({
     var faculty = this.model;
     return ["%li.faculty",
       ["%a",{
-        href: '#/faculties/' + faculty.get('acronym') + '/courses'
+        href: '#/faculties/' + faculty.get('acronym')
       },faculty.get('name') + ' (' + faculty.get('acronym') + ')']
     ];
   }

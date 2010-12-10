@@ -5,5 +5,6 @@ UWData.config({
 
 $(function() {
   new FacultiesController;
+  new CoursesController;
   Backbone.history.start();
 });
